@@ -25,14 +25,15 @@ public:
         }
 
         if (font_) {
-            titleText_ = std::make_unique<sf::Text>(*font_);
+            titleText_ = std::make_unique<sf::Text>();
+            titleText_->setFont(*font_);
             titleText_->setString("OPTIONS");
             titleText_->setCharacterSize(48);
             titleText_->setFillColor(sf::Color::White);
             titleText_->setStyle(sf::Text::Bold);
             sf::FloatRect titleBounds = titleText_->getLocalBounds();
-            titleText_->setOrigin({titleBounds.size.x / 2.f, titleBounds.size.y / 2.f});
-            titleText_->setPosition({WINDOW_CENTER_X, 80.f});
+            titleText_->setOrigin(titleBounds.width / 2.f, titleBounds.height / 2.f);
+            titleText_->setPosition(WINDOW_CENTER_X, 80.f);
         }
 
         currentOption_ = 0;
@@ -56,19 +57,19 @@ public:
     }
 
     void handleInput(const sf::Event& event) override {
-        if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
-            handleKeyPress(keyPressed->code);
+        if (event.type == sf::Event::KeyPressed) {
+            handleKeyPress(event.key.code);
         }
 
-        if (const auto* mousePressed = event.getIf<sf::Event::MouseButtonPressed>()) {
-            if (mousePressed->button == sf::Mouse::Button::Left) {
+        if (event.type == sf::Event::MouseButtonPressed) {
+            if (event.mouseButton.button == sf::Mouse::Left) {
                 handleMouseClick(mousePos_);
             }
         }
 
-        if (const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
-            mousePos_ = sf::Vector2f(static_cast<float>(mouseMoved->position.x),
-                                     static_cast<float>(mouseMoved->position.y));
+        if (event.type == sf::Event::MouseMoved) {
+            mousePos_ = sf::Vector2f(static_cast<float>(event.mouseMove.x),
+                                     static_cast<float>(event.mouseMove.y));
         }
     }
 
@@ -196,18 +197,20 @@ private:
             float spacing = 50.f;
             
             for (size_t i = 0; i < options_.size(); ++i) {
-                auto label = std::make_unique<sf::Text>(*font_);
+                auto label = std::make_unique<sf::Text>();
+                label->setFont(*font_);
                 label->setString(options_[i].name);
                 label->setCharacterSize(24);
                 label->setFillColor(sf::Color::White);
-                label->setPosition({WINDOW_CENTER_X - 300.f, startY + i * spacing});
+                label->setPosition(WINDOW_CENTER_X - 300.f, startY + i * spacing);
                 optionLabels_.push_back(std::move(label));
 
-                auto value = std::make_unique<sf::Text>(*font_);
+                auto value = std::make_unique<sf::Text>();
+                value->setFont(*font_);
                 value->setString(options_[i].value);
                 value->setCharacterSize(24);
                 value->setFillColor(sf::Color::Cyan);
-                value->setPosition({WINDOW_CENTER_X + 100.f, startY + i * spacing});
+                value->setPosition(WINDOW_CENTER_X + 100.f, startY + i * spacing);
                 optionValues_.push_back(std::move(value));
             }
         }
@@ -363,18 +366,20 @@ private:
             if (i < optionValues_.size()) window.draw(*optionValues_[i]);
 
             if (font_ && (options_[i].type == Option::CHOICE || options_[i].type == Option::SLIDER)) {
-                sf::Text leftArrow(*font_);
+                sf::Text leftArrow;
+                leftArrow.setFont(*font_);
                 leftArrow.setString("<");
                 leftArrow.setCharacterSize(24);
                 leftArrow.setFillColor(sf::Color(150, 150, 150));
-                leftArrow.setPosition({WINDOW_CENTER_X + 60.f, 160.f + i * 50.f});
+                leftArrow.setPosition(WINDOW_CENTER_X + 60.f, 160.f + i * 50.f);
                 window.draw(leftArrow);
 
-                sf::Text rightArrow(*font_);
+                sf::Text rightArrow;
+                rightArrow.setFont(*font_);
                 rightArrow.setString(">");
                 rightArrow.setCharacterSize(24);
                 rightArrow.setFillColor(sf::Color(150, 150, 150));
-                rightArrow.setPosition({WINDOW_CENTER_X + 250.f, 160.f + i * 50.f});
+                rightArrow.setPosition(WINDOW_CENTER_X + 250.f, 160.f + i * 50.f);
                 window.draw(rightArrow);
             }
 
@@ -422,13 +427,14 @@ private:
     void drawInstructions(sf::RenderWindow& window) {
         if (!font_) return;
 
-        sf::Text instructions(*font_);
+        sf::Text instructions;
+        instructions.setFont(*font_);
         instructions.setString("UP/DOWN: Select   LEFT/RIGHT: Adjust   ENTER: Toggle   ESC: Back");
         instructions.setCharacterSize(16);
         instructions.setFillColor(sf::Color(150, 150, 150));
         sf::FloatRect bounds = instructions.getLocalBounds();
-        instructions.setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
-        instructions.setPosition({WINDOW_CENTER_X, static_cast<float>(window.getSize().y) - 30.f});
+        instructions.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+        instructions.setPosition(WINDOW_CENTER_X, static_cast<float>(window.getSize().y) - 30.f);
         window.draw(instructions);
     }
 };

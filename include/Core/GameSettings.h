@@ -109,12 +109,12 @@ public:
         std::cout << "[GameSettings] Applying settings..." << std::endl;
         
         // Recreate window with new settings
-        sf::VideoMode mode({currentResolution_.width, currentResolution_.height});
+        sf::VideoMode mode(currentResolution_.width, currentResolution_.height);
         
         if (fullscreen_) {
-            window.create(mode, "Voxet", sf::State::Fullscreen);
+            window.create(mode, "Voxet", sf::Style::Fullscreen);
         } else {
-            window.create(mode, "Voxet", sf::Style::Titlebar | sf::Style::Close, sf::State::Windowed);
+            window.create(mode, "Voxet", sf::Style::Titlebar | sf::Style::Close);
         }
         
         window.setVerticalSyncEnabled(vsync_);

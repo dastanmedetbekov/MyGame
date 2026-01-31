@@ -26,10 +26,10 @@ public:
     void handleInput(const sf::Event& event) override {
         if (exiting_) return;
         
-        if (const auto* mousePressed = event.getIf<sf::Event::MouseButtonPressed>()) {
+        if (event.type == sf::Event::MouseButtonPressed) {
             sf::Vector2f mousePos(
-                static_cast<float>(mousePressed->position.x),
-                static_cast<float>(mousePressed->position.y)
+                static_cast<float>(event.mouseButton.x),
+                static_cast<float>(event.mouseButton.y)
             );
             
             for (auto& button : buttons_) {
@@ -40,15 +40,15 @@ public:
             }
         }
         
-        if (const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
+        if (event.type == sf::Event::MouseMoved) {
             mousePos_ = sf::Vector2f(
-                static_cast<float>(mouseMoved->position.x),
-                static_cast<float>(mouseMoved->position.y)
+                static_cast<float>(event.mouseMove.x),
+                static_cast<float>(event.mouseMove.y)
             );
         }
         
-        if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
-            if (keyPressed->code == sf::Keyboard::Key::Escape) {
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Escape) {
                 exiting_ = true;
                 stateManager_->popState();
                 return;

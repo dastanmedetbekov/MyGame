@@ -39,13 +39,14 @@ public:
         }
 
         if (font_) {
-            textLabel_ = sf::Text(*font_);
+            textLabel_ = sf::Text();
+            textLabel_->setFont(*font_);
             textLabel_->setString(text_);
             textLabel_->setCharacterSize(24);
             textLabel_->setFillColor(sf::Color::White);
             
             sf::FloatRect textBounds = textLabel_->getLocalBounds();
-            textLabel_->setOrigin({textBounds.size.x / 2.f, textBounds.size.y / 2.f});
+            textLabel_->setOrigin(textBounds.width / 2.f, textBounds.height / 2.f);
             textLabel_->setPosition(position_);
         } else {
             std::cerr << "[Button] Warning: Could not load any font for button '" << text_ << "'" << std::endl;

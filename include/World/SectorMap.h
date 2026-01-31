@@ -137,8 +137,8 @@ public:
         for (const auto& [id, sector] : sectors_) {
             sf::FloatRect bounds = sector.getBounds();
             sf::RectangleShape boundsShape;
-            boundsShape.setSize({bounds.size.x, bounds.size.y});
-            boundsShape.setPosition({bounds.position.x, bounds.position.y});
+            boundsShape.setSize(sf::Vector2f(bounds.width, bounds.height));
+            boundsShape.setPosition(sf::Vector2f(bounds.left, bounds.top));
             boundsShape.setFillColor(sf::Color(100, 100, 100, 30));
             boundsShape.setOutlineColor(sf::Color(150, 150, 150, 100));
             boundsShape.setOutlineThickness(1.0f);
@@ -176,20 +176,20 @@ public:
             sf::FloatRect bounds = sector.getBounds();
             
             if (first) {
-                minX = bounds.position.x;
-                maxX = bounds.position.x + bounds.size.x;
-                minY = bounds.position.y;
-                maxY = bounds.position.y + bounds.size.y;
+                minX = bounds.left;
+                maxX = bounds.left + bounds.width;
+                minY = bounds.top;
+                maxY = bounds.top + bounds.height;
                 first = false;
             } else {
-                minX = std::min(minX, bounds.position.x);
-                maxX = std::max(maxX, bounds.position.x + bounds.size.x);
-                minY = std::min(minY, bounds.position.y);
-                maxY = std::max(maxY, bounds.position.y + bounds.size.y);
+                minX = std::min(minX, bounds.left);
+                maxX = std::max(maxX, bounds.left + bounds.width);
+                minY = std::min(minY, bounds.top);
+                maxY = std::max(maxY, bounds.top + bounds.height);
             }
         }
 
-        return sf::FloatRect({minX, minY}, {maxX - minX, maxY - minY});
+        return sf::FloatRect(minX, minY, maxX - minX, maxY - minY);
     }
 
 private:

@@ -18,9 +18,9 @@ void MenuState::onEnter() {
         
         logoSprite_ = std::make_unique<sf::Sprite>(*logoTexture_);
         sf::FloatRect bounds = logoSprite_->getLocalBounds();
-        logoSprite_->setOrigin({bounds.size.x / 2.f, bounds.size.y / 2.f});
-        logoSprite_->setPosition({WINDOW_CENTER_X, WINDOW_HEIGHT + bounds.size.y / 2.f + 10.f});
-        logoSprite_->setScale({2.0f, 2.0f});
+        logoSprite_->setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+        logoSprite_->setPosition(WINDOW_CENTER_X, WINDOW_HEIGHT + bounds.height / 2.f + 10.f);
+        logoSprite_->setScale(2.0f, 2.0f);
 
         shineSprite_ = std::make_unique<sf::Sprite>(*logoTexture_);
         shineSprite_->setOrigin(logoSprite_->getOrigin());
@@ -78,24 +78,24 @@ void MenuState::resume() {
 
 void MenuState::handleInput(const sf::Event& event) {
     if (!logoAnimationComplete_ || buttonsFadeAlpha_ < 255.f) {
-        if (event.is<sf::Event::KeyPressed>() || event.is<sf::Event::MouseButtonPressed>()) {
+        if (event.type == sf::Event::KeyPressed || event.type == sf::Event::MouseButtonPressed) {
             skipAnimation();
             return;
         }
 
-        if (const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
+        if (event.type == sf::Event::MouseMoved) {
             mousePos_ = sf::Vector2f(
-                static_cast<float>(mouseMoved->position.x),
-                static_cast<float>(mouseMoved->position.y)
+                static_cast<float>(event.mouseMove.x),
+                static_cast<float>(event.mouseMove.y)
             );
         }
         return;
     }
 
-    if (const auto* mousePressed = event.getIf<sf::Event::MouseButtonPressed>()) {
+    if (event.type == sf::Event::MouseButtonPressed) {
         sf::Vector2f mousePos(
-            static_cast<float>(mousePressed->position.x),
-            static_cast<float>(mousePressed->position.y)
+            static_cast<float>(event.mouseButton.x),
+            static_cast<float>(event.mouseButton.y)
         );
 
         for (auto& button : buttons_) {
@@ -106,10 +106,10 @@ void MenuState::handleInput(const sf::Event& event) {
         }
     }
 
-    if (const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
+    if (event.type == sf::Event::MouseMoved) {
         mousePos_ = sf::Vector2f(
-            static_cast<float>(mouseMoved->position.x),
-            static_cast<float>(mouseMoved->position.y)
+            static_cast<float>(event.mouseMove.x),
+            static_cast<float>(event.mouseMove.y)
         );
     }
 }

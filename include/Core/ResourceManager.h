@@ -45,7 +45,7 @@ public:
         }
 
         auto font = std::make_unique<sf::Font>();
-        if (!font->openFromFile(filepath)) {
+        if (!font->loadFromFile(filepath)) {
             std::cerr << "[ResourceManager] Failed to load font: " << filepath << std::endl;
             return nullptr;
         }

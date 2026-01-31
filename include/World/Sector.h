@@ -102,14 +102,14 @@ public:
             maxY = std::max({maxY, start.y, end.y});
         }
 
-        return sf::FloatRect({minX, minY}, {maxX - minX, maxY - minY});
+        return sf::FloatRect(minX, minY, maxX - minX, maxY - minY);
     }
 
     sf::Vector2f getCenter() const {
         sf::FloatRect bounds = getBounds();
         return sf::Vector2f(
-            bounds.position.x + bounds.size.x / 2.0f,
-            bounds.position.y + bounds.size.y / 2.0f
+            bounds.left + bounds.width / 2.0f,
+            bounds.top + bounds.height / 2.0f
         );
     }
 

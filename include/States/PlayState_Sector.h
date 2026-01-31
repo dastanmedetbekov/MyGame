@@ -21,7 +21,7 @@ public:
     void onEnter() override {
         std::cout << "=== PlayState (Sector Engine): Entering ===" << std::endl;
         
-        if (!renderTexture_.resize({INTERNAL_WIDTH, INTERNAL_HEIGHT})) {
+        if (!renderTexture_.create(INTERNAL_WIDTH, INTERNAL_HEIGHT)) {
             std::cerr << "ERROR: Failed to create render texture!" << std::endl;
         }
         renderTexture_.setSmooth(false); 
@@ -103,22 +103,22 @@ public:
     }
 
     void handleInput(const sf::Event& event) override {
-        if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
-            if (keyPressed->code == sf::Keyboard::Key::Escape) {
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Escape) {
                 if (mouseLocked_) {
                     unlockMouse();
                 } else {
                     if (stateManager_) stateManager_->pushState("Pause");
                 }
             }
-            if (keyPressed->code == sf::Keyboard::Key::Tab) {
+            if (event.key.code == sf::Keyboard::Tab) {
                 mode3D_ = !mode3D_;
                 std::cout << "[PlayState] Switched to " << (mode3D_ ? "3D" : "2D") << " mode" << std::endl;
                 if (!mode3D_) {
                     unlockMouse();
                 }
             }
-            if (keyPressed->code == sf::Keyboard::Key::M && mode3D_) {
+            if (event.key.code == sf::Keyboard::M && mode3D_) {
                 mouseLocked_ = !mouseLocked_;
                 if (mouseLocked_ && player_) {
                     lockMouse();
@@ -127,33 +127,33 @@ public:
                 }
             }
             
-            if (keyPressed->code == sf::Keyboard::Key::Space && player_) {
+            if (event.key.code == sf::Keyboard::Space && player_) {
                 player_->jump();
             }
             
-            if (keyPressed->code == sf::Keyboard::Key::C && player_) {
+            if (event.key.code == sf::Keyboard::C && player_) {
                 player_->toggleCrouch();
             }
         }
 
         if (player_) {
-            player_->setSprinting(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ||
-                                  sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RShift));
+            player_->setSprinting(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
+                                  sf::Keyboard::isKeyPressed(sf::Keyboard::RShift));
             
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl)) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
                 player_->setCrouching(true);
             } else {
                 player_->setCrouching(false);
             }
         }
 
-        if (const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>()) {
+        if (event.type == sf::Event::MouseMoved) {
             if (mouseLocked_ && mode3D_ && window_) {
                 sf::Vector2u windowSize = window_->getSize();
                 sf::Vector2i center(windowSize.x / 2, windowSize.y / 2);
 
-                float deltaX = static_cast<float>(mouseMoved->position.x - center.x);
-                float deltaY = static_cast<float>(mouseMoved->position.y - center.y);
+                float deltaX = static_cast<float>(event.mouseMove.x - center.x);
+                float deltaY = static_cast<float>(event.mouseMove.y - center.y);
 
                 if (std::abs(deltaX) > 0.5f) {
                     mouseRotation_ += deltaX * MOUSE_SENSITIVITY;
@@ -169,8 +169,8 @@ public:
             }
         }
 
-        if (const auto* mousePressed = event.getIf<sf::Event::MouseButtonPressed>()) {
-            if (mode3D_ && !mouseLocked_ && mousePressed->button == sf::Mouse::Button::Left) {
+        if (event.type == sf::Event::MouseButtonPressed) {
+            if (mode3D_ && !mouseLocked_ && event.mouseButton.button == sf::Mouse::Left) {
                 lockMouse();
             }
         }
@@ -264,8 +264,8 @@ public:
             if (currentSector_) {
                 sf::FloatRect bounds = currentSector_->getBounds();
                 sf::RectangleShape highlight;
-                highlight.setSize({bounds.size.x, bounds.size.y});
-                highlight.setPosition({bounds.position.x, bounds.position.y});
+                highlight.setSize(sf::Vector2f(bounds.width, bounds.height));
+                highlight.setPosition(sf::Vector2f(bounds.left, bounds.top));
                 highlight.setFillColor(sf::Color(255, 255, 0, 30));
                 highlight.setOutlineColor(sf::Color::Yellow);
                 highlight.setOutlineThickness(2.0f);
@@ -441,7 +441,8 @@ private:
     void drawHUD(sf::RenderWindow& window) {
         static sf::Font* font = ResourceManager::getInstance().getFont(Assets::FONT_PRIMARY);
         if (font) {
-            sf::Text text(*font);
+            sf::Text text;
+            text.setFont(*font);
             
             // Mode and mouse status
             std::string modeText = mode3D_ ? "3D Mode (Sector Engine)" : "2D Mode";
@@ -480,8 +481,8 @@ private:
             // Add background for readability
             sf::FloatRect textBounds = text.getGlobalBounds();
             sf::RectangleShape background;
-            background.setSize({textBounds.size.x + 20.f, textBounds.size.y + 20.f});
-            background.setPosition({textBounds.position.x - 10.f, textBounds.position.y - 10.f});
+            background.setSize(sf::Vector2f(textBounds.width + 20.f, textBounds.height + 20.f));
+            background.setPosition(sf::Vector2f(textBounds.left - 10.f, textBounds.top - 10.f));
             background.setFillColor(sf::Color(0, 0, 0, 150));
             
             window.draw(background);

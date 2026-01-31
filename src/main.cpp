@@ -15,10 +15,10 @@ int main() {
     sf::RenderWindow window;
     
     if (settings.isFullscreen()) {
-        window.create(sf::VideoMode({resolution.width, resolution.height}), "Voxet", sf::State::Fullscreen);
+        window.create(sf::VideoMode(resolution.width, resolution.height), "Voxet", sf::Style::Fullscreen);
     } else {
-        window.create(sf::VideoMode({resolution.width, resolution.height}), "Voxet", 
-                      sf::Style::Titlebar | sf::Style::Close, sf::State::Windowed);
+        window.create(sf::VideoMode(resolution.width, resolution.height), "Voxet", 
+                      sf::Style::Titlebar | sf::Style::Close);
     }
     
     if (settings.isVSyncEnabled()) {
@@ -51,12 +51,13 @@ int main() {
             break;
         }
         
-        while (auto event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
                 window.close();
             }
             
-            stateManager.handleInput(*event);
+            stateManager.handleInput(event);
         }
         
         float deltaTime = clock.restart().asSeconds();
